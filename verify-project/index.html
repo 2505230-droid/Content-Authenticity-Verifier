@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VerifyAI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="header">
+    <div class="logo">
+      <span class="logo-icon">🛡️</span>
+      <span class="logo-text">Verify<span class="accent">AI</span></span>
+    </div>
+    <p class="tagline">Multi-signal content authenticity analysis</p>
+  </header>
+
+  <main class="main">
+
+    <div class="tabs">
+      <button class="tab active" id="tab-text">📝 Verify Text</button>
+      <button class="tab" id="tab-image">🖼️ Verify Image</button>
+    </div>
+
+    <!-- TEXT -->
+    <section id="panel-text" class="panel active">
+      <div class="card">
+        <h2>Paste text to analyse</h2>
+        <textarea id="text-input" rows="10"
+          placeholder="Paste an article or any text here…"></textarea>
+        <div class="actions">
+          <span id="char-count">0 characters</span>
+          <button id="btn-text" class="btn">🔍 Analyse Text</button>
+        </div>
+      </div>
+      <div id="text-results"></div>
+    </section>
+
+    <!-- IMAGE -->
+    <section id="panel-image" class="panel">
+      <div class="card">
+        <h2>Upload an image to analyse</h2>
+        <div id="drop-zone" class="dropzone">
+          <div id="drop-prompt">
+            <div class="dropzone-icon">📁</div>
+            <p>Drag & drop an image here or <span class="link" id="browse-link">browse</span></p>
+            <p class="small">JPG, PNG, WebP — max 20 MB</p>
+          </div>
+          <img id="img-preview" alt="preview" />
+        </div>
+        <input type="file" id="file-input" accept="image/*" />
+        <div class="actions">
+          <span id="file-name"></span>
+          <button id="btn-image" class="btn" disabled>🔍 Analyse Image</button>
+        </div>
+      </div>
+      <div id="image-results"></div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    Digital Trust &amp; Rapid Prototyping Hackathon — no data leaves your machine.
+  </footer>
+
+  <div id="loader" class="loader">
+    <div class="loader-box">
+      <div class="spinner"></div>
+      <p id="loader-msg">Analysing…</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
