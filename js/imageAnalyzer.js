@@ -151,48 +151,62 @@ const ImageAnalyzer = {
      * Detect if image is AI-generated using Hugging Face
      */
     async detectAIGenerated(binaryData, apiKey) {
-        try {
-            const response = await fetch(
-                `${this.API_URL}${this.MODELS.aiImageDetector}`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${apiKey}`
-                    },
-                    body: binaryData
-                }
-            );
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                if (errorData.error && errorData.error.includes('loading')) {
-                    // Model is loading, wait and retry
-                    await new Promise(r => setTimeout(r, 20000));
-                    return await this.detectAIGenerated(binaryData, apiKey);
-                }
-                throw new Error(`API error: ${response.status}`);
+    try {
+        const response = await fetch(
+            `${this.API_URL}${this.MODELS.aiImageDetector}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: binaryData
             }
+        );
 
-            const data = await response.json();
+        const data = await response.json();
 
-            let realScore = 50;
+        console.log("AI Model Response:", data); // Debug output
 
-            if (Array.isArray(data)) {
-                for (const item of data) {
-                    const label = item.label?.toLowerCase() || '';
-                    if (label.includes('real') || label.includes('human') || label.includes('authentic')) {
-                        realScore = Math.round(item.score * 100);
-                    }
-                }
+        if (!response.ok) {
+            if (data.error && data.error.includes('loading')) {
+                // Model is loading, wait and retry
+                await new Promise(r => setTimeout(r, 20000));
+                return await this.detectAIGenerated(binaryData, apiKey);
             }
-
-            return { realScore };
-
-        } catch (error) {
-            console.warn('AI image detection error:', error);
-            return null;
+            throw new Error(`API error: ${response.status}`);
         }
-    },
+
+        let realScore = 50;
+
+        if (Array.isArray(data)) {
+            for (const item of data) {
+                const label = item.label?.toLowerCase() || '';
+
+                if (
+                    label.includes('real') ||
+                    label.includes('human') ||
+                    label.includes('authentic')
+                ) {
+                    realScore = Math.round(item.score * 100);
+                }
+
+                if (
+                    label.includes('fake') ||
+                    label.includes('ai') ||
+                    label.includes('generated')
+                ) {
+                    realScore = Math.round((1 - item.score) * 100);
+                }
+            }
+        }
+
+        return { realScore };
+
+    } catch (error) {
+        console.warn('AI image detection error:', error);
+        return null;
+    }
+},
 
     /**
      * Detect deepfakes using Hugging Face

@@ -129,7 +129,7 @@ const TextAnalyzer = {
         try {
             // Use OpenAI detector model
             const response = await fetch(
-                `${this.API_URL}openai-community/roberta-base-openai-detector`,
+                `${this.API_URL}Hello-SimpleAI/chatgpt-detector-roberta`,
                 {
                     method: 'POST',
                     headers: {
@@ -166,18 +166,16 @@ const TextAnalyzer = {
             if (Array.isArray(data) && Array.isArray(data[0])) {
                 const results = data[0];
                 for (const result of results) {
-                    const label = result.label.toLowerCase();
-                    if (label === 'real' || label === 'label_1') {
-                        humanScore = Math.round(result.score * 100);
-                    }
-                }
-            } else if (Array.isArray(data)) {
-                for (const result of data) {
-                    const label = result.label.toLowerCase();
-                    if (label === 'real' || label === 'label_1') {
-                        humanScore = Math.round(result.score * 100);
-                    }
-                }
+    const label = result.label.toLowerCase();
+
+    if (label.includes("real") || label.includes("human")) {
+        humanScore = Math.round(result.score * 100);
+    }
+
+    if (label.includes("ai") || label.includes("fake") || label.includes("generated")) {
+        humanScore = Math.round((1 - result.score) * 100);
+    }
+}
             }
 
             return { humanScore };
